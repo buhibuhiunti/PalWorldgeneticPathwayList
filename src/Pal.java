@@ -1,4 +1,5 @@
-import jdk.internal.net.http.common.Pair;
+import org.apache.commons.lang3.tuple.Pair;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,11 +13,15 @@ public class Pal {
         this.fastParent = fastParent;
     }
 
-    String addCombination(String palName,String secondParent) {
-        try {
-            Pair<String,Pal> combination = Pair.of(palName,Class.forName(secondParent));
-        } catch (ClassNotFoundException e) {
-
+    void addCombination(String palName,String secondParent) {
+        Pair<String,String> combination = Pair.of(palName,secondParent);
+        this.combinationList.add(combination);
+    }
+    void testPrint() {
+        System.out.println(this.fastParent);
+        for(Pair pair : this.combinationList) {
+            System.out.print(pair.getLeft());
         }
+        System.out.println();
     }
 }

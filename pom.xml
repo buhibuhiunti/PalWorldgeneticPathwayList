@@ -1,32 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    <!-- プロジェクトの基本情報 -->
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.yourcompany</groupId>
-    <artifactId>your-project-name</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>com.D</groupId>
+    <artifactId>pal-world-genetic-pathway-search</artifactId>
+    <version>1.0</version>
 
-    <!-- 依存関係の定義 -->
     <dependencies>
-        <!-- 例: JUnitの依存関係 -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- 他の依存関係もここに追加 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version> <!-- 使用するバージョンに合わせて変更 -->
+            <version>3.14.0</version>
         </dependency>
+        <!-- 他の依存関係があればここに追加 -->
     </dependencies>
-
-    <!-- ビルド設定 -->
     <build>
-        <!-- プラグインの設定など -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

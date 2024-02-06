@@ -1,5 +1,5 @@
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -33,9 +33,9 @@ public class Main {
             }
             loopCount++;
         }
+        scanner = new Scanner(System.in);
         while(true) {
-            System.out.println("どの検索方法を使用しますか" + "1.個体値遺伝検索");
-            scanner = new Scanner(System.in);
+            System.out.print("どの検索方法を使用しますか\n" + "1.個体値遺伝検索\n>");
             int input = scanner.nextInt();
             switch (input) {
                 case 1:
@@ -48,6 +48,125 @@ public class Main {
         }
     }
     public static void individualValueGeneticSearch(String[][] combinationTable) {
+        boolean doesItExist = false;
+        Scanner scanner = new Scanner(System.in);
+        List<String> parentsList = new ArrayList<>();
+        String childPal = "NODATA";
+        List<String> searchList;
+        List<List<List<String>>> threeDimensionalGenerationList = new ArrayList<List<List<String>>>();
+        while(!doesItExist) {
+            System.out.print("欲しいパルを言え\n>");
+            String wantPal = scanner.nextLine();
+            doesItExist = Arrays.stream(combinationTable)
+                                .flatMap(Arrays::stream)
+                                .anyMatch(wantPal::equals);
+            if(!doesItExist) {
+                System.out.println("だめで～す");
+            }
+            childPal = wantPal;
+        }
+        boolean hasParentInputBeenCompleted = false;
+        while(!hasParentInputBeenCompleted) {
+            doesItExist = false;
+            String wantPal = "NODATA";
+            while(!doesItExist) {
+                System.out.print("親にするパルを言え\n>");
+                wantPal = scanner.nextLine();
+                doesItExist = Arrays.stream(combinationTable)
+                                    .flatMap(Arrays::stream)
+                                    .anyMatch(wantPal::equals);
+                if(!doesItExist) {
+                    System.out.println("だめで～す");
+                }
+            }
+            parentsList.add(wantPal);
+            boolean wereAbleAnswer = false;
+            while(!wereAbleAnswer) {
+                System.out.print("他にも親にするやついる？\n1.いる\n2.いない\n>");
+                int i = scanner.nextInt();
+                switch (i) {
+                    case 1:
+                        wereAbleAnswer = true;
+                        wantPal = scanner.nextLine();
+                        break;
+                    case 2:
+                        wereAbleAnswer = true;
+                        hasParentInputBeenCompleted = true;
+                        break;
+                    default:
+                        System.out.print("だめで～す");
+                        break;
+                }
+            }
+        }
+        boolean foundGeneticPathway = false;
+        searchList = new ArrayList<>(parentsList);
+        int parentTypesNum = 0;
+        while(!foundGeneticPathway) {
+            List<List<String>> twoDimensionalGenerationList = new ArrayList<List<String>>();
+            List<String> copySearchList = new ArrayList<>(searchList);
+            for(String firstParent : searchList) {
+                for(String secondParent : searchList) {
+                    if(!copySearchList.contains(mixingResult(firstParent,secondParent,combinationTable))) {
+                        copySearchList.add(mixingResult(firstParent,secondParent,combinationTable));
+                        List<String> oneDimensionalGenerationList = new ArrayList<String>();
+                        oneDimensionalGenerationList.add(firstParent);
+                        oneDimensionalGenerationList.add(secondParent);
+                        oneDimensionalGenerationList.add(mixingResult(firstParent,secondParent,combinationTable));
+                        twoDimensionalGenerationList.add(0,oneDimensionalGenerationList);
+                    }
+                }
+            }
+            threeDimensionalGenerationList.add(0,twoDimensionalGenerationList);
+            searchList = new ArrayList<>(copySearchList);
+            for(String s : searchList) {
 
+                if(s.equals(childPal)) {
+                    foundGeneticPathway = true;
+                }
+            }
+            if(parentTypesNum < searchList.size()) {
+                parentTypesNum = searchList.size();
+            } else {
+                System.out.println("この親から産まれてくることはないで\n産まれてくるパルは以下のやつだけ");
+                searchList.forEach(System.out::println);
+                System.exit(0);
+            }
+        }
+        Queue<String> parentSearchWaitQueue = new LinkedList<>();
+        Deque<String> outputString = new ArrayDeque<>();
+        List<String> searchedList = new ArrayList<>();
+        parentSearchWaitQueue.offer(childPal);
+        while(!parentSearchWaitQueue.isEmpty()) {
+            for(List<List<String>> twoList : threeDimensionalGenerationList) {
+                for(List<String> oneList : twoList) {
+                    if(oneList.get(2).equals(parentSearchWaitQueue.peek())) {
+                        outputString.push(oneList.get(0) + "と" + oneList.get(1) + "を配合させて" + parentSearchWaitQueue.poll() + "を作る");
+                        if(!parentsList.contains(oneList.get(0)) && !searchedList.contains(oneList.get(0))) {
+                            parentSearchWaitQueue.offer(oneList.get(0));
+                            searchedList.add(oneList.get(0));
+                        }
+                        if(!parentsList.contains(oneList.get(1)) && !searchedList.contains(oneList.get(1))) {
+                            parentSearchWaitQueue.offer(oneList.get(1));
+                            searchedList.add(oneList.get(1));
+                        }
+                    }
+                }
+            }
+        }
+        outputString.stream().forEach(System.out::println);
+    }
+    static String mixingResult(String firstParent, String secondParent, String[][] combinationTable) {
+        int firstParentNum = -1;
+        int secondParentNum = -1;
+        for(int i = 0;i < combinationTable.length;i++) {
+            if(combinationTable[0][i].equals(firstParent)) {
+                firstParentNum = i;
+            }
+            if(combinationTable[0][i].equals(secondParent)) {
+                secondParentNum = i;
+            }
+        }
+        return combinationTable[firstParentNum][secondParentNum];
     }
 }

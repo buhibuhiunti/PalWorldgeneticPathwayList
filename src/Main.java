@@ -134,14 +134,17 @@ public class Main {
             }
         }
         Queue<String> parentSearchWaitQueue = new LinkedList<>();
-        Deque<String> outputString = new ArrayDeque<>();
+        List<List<String>> twoListOfNamesAssociatedWithInheritancePaths = new ArrayList<List<String>>();
         List<String> searchedList = new ArrayList<>();
         parentSearchWaitQueue.offer(childPal);
         while(!parentSearchWaitQueue.isEmpty()) {
             for(List<List<String>> twoList : threeDimensionalGenerationList) {
                 for(List<String> oneList : twoList) {
                     if(oneList.get(2).equals(parentSearchWaitQueue.peek())) {
-                        outputString.push(oneList.get(0) + "と" + oneList.get(1) + "を配合させて" + parentSearchWaitQueue.poll() + "を作る");
+                        List<String> oneListOfNamesAssociatedWithInheritancePaths = new ArrayList<>();
+                        oneListOfNamesAssociatedWithInheritancePaths.add(oneList.get(0));
+                        oneListOfNamesAssociatedWithInheritancePaths.add(oneList.get(1));
+                        oneListOfNamesAssociatedWithInheritancePaths.add(parentSearchWaitQueue.poll());
                         if(!parentsList.contains(oneList.get(0)) && !searchedList.contains(oneList.get(0))) {
                             parentSearchWaitQueue.offer(oneList.get(0));
                             searchedList.add(oneList.get(0));
@@ -150,11 +153,31 @@ public class Main {
                             parentSearchWaitQueue.offer(oneList.get(1));
                             searchedList.add(oneList.get(1));
                         }
+                        twoListOfNamesAssociatedWithInheritancePaths.add(oneListOfNamesAssociatedWithInheritancePaths);
                     }
                 }
             }
         }
-        outputString.stream().forEach(System.out::println);
+        List<String> listOfParentsAssociatedWithTheCombinationToOutput = new ArrayList<>(parentsList);
+        List<List<String>> copyTwoListOfNamesAssociatedWithInheritancePaths = new ArrayList<>(twoListOfNamesAssociatedWithInheritancePaths);
+        while (!twoListOfNamesAssociatedWithInheritancePaths.isEmpty()) {
+            for(List<String> one : twoListOfNamesAssociatedWithInheritancePaths) {
+                if(listOfParentsAssociatedWithTheCombinationToOutput.contains(one.get(0)) &&
+                        listOfParentsAssociatedWithTheCombinationToOutput.contains(one.get(1))) {
+                    listOfParentsAssociatedWithTheCombinationToOutput.add(one.get(2));
+                    System.out.println(one.get(0) + "と" + one.get(1) + "を配合させて" + one.get(2) + "を作る");
+                    Iterator<List<String>> iterator = copyTwoListOfNamesAssociatedWithInheritancePaths.listIterator();
+                    while(iterator.hasNext()) {
+                        List<String> subList = iterator.next();
+                        if(subList.contains(one.get(0)) && subList.contains(one.get(1)) && subList.contains(one.get(2))) {
+                            iterator.remove();
+                        }
+                    }
+                }
+            }
+            twoListOfNamesAssociatedWithInheritancePaths = new ArrayList<>(copyTwoListOfNamesAssociatedWithInheritancePaths);
+        }
+
     }
     static String mixingResult(String firstParent, String secondParent, String[][] combinationTable) {
         int firstParentNum = -1;
